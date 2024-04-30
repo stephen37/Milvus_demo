@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "hybrid-search"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+pymilvus = {extras = ["model"], version = "^2.4.0"}
+jupyterlab = "^4.1.7"
+ipywidgets = "^8.1.2"
+torchvision = "^0.18.0"
+clip = {git = "https://github.com/openai/CLIP.git"}
+wikipedia = "^1.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
