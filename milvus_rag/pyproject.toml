@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "milvus-rag"
+version = "0.1.0"
+description = ""
+authors = ["Stephen Batifol"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pymilvus = {extras = ["model"], version = "^2.4.1"}
+langchain = "^0.1.16"
+pypdf = "^4.2.0"
+jupyterlab = "^4.1.8"
+langchain-openai = "^0.1.5"
+langchainhub = "^0.1.15"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
