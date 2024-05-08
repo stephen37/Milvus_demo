@@ -23,5 +23,5 @@ pillow = "^10.3.0"
 ruff = "^0.4.3"
 
 [build-system]
-requires = ["poetry-core"]
+reuires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
