@@ -35,8 +35,8 @@ This repository demonstrates how to use [Milvus](https://github.com/milvus-io/mi
 2. Follow the instructions in the notebook to set up Milvus, load the CLIP model, and perform searches.
 
 ## Support
-* Star Us on GitHub: If you find this project useful, please [give us a star on GitHub](https://github.com/milvus-io/milvus)!
-* Join Our Community: Join our [Discord](https://discord.gg/FG6hMJStWu) to connect with other users and developers.
+* **Star Us on GitHub**: If you find this project useful, please [give us a star on GitHub](https://github.com/milvus-io/milvus)!
+* **Join Our Community**: Join our [Discord](https://discord.gg/FG6hMJStWu) to connect with other users and developers.
 
 ## Contributing
 
