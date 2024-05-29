@@ -6,6 +6,7 @@ The Jupyter notebooks provided guide you through setting up the embedding models
 
 It also showcases how you can use different languages when interacting with your data. 
 
+![alt text](Milvus_x_llama-index.png)
 --- 
 
 Check out [Milvus](https://github.com/milvus-io/milvus), and join our [Discord](https://discord.gg/FG6hMJStWu) if you have some questions
