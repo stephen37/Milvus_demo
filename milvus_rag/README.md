@@ -1,12 +1,10 @@
 # Local RAG application with Milvus
-This Jupyter notebook is designed to showcase how to build a RAG (Retrieval Augmented Generations) app using [Milvus](https://github.com/milvus-io/milvus), Langchain and Ollama. 
+This Jupyter notebook is designed to showcase how to build a RAG (Retrieval Augmented Generations) app using [Milvus-Lite](https://github.com/milvus-io/milvus-lite), Langchain and Ollama.
 
-It is designed to run locally and to show that you can build a RAG app in less than 50 lines of code!
+It is designed to run locally and to show that you can build a RAG app in less than 50 lines of code! With Milvus Lite, you don't need to use Docker or anything. It will just run in your notebook
 
 ## Requirements
 - [Ollama](https://ollama.com/) -- Run LLMs locally. Make sure you have the model downloaded as well, e.g. in our case we use Llama3 so run `ollama run llama3`. 
-- Docker & Docker-compose - To run Milvus 
-- Have Milvus running on your laptop, by running `docker-compose up -d`! 
 
 ## Installation
 Use either Poetry or pip to install packages.
