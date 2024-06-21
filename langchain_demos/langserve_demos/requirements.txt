@@ -1,0 +1,8 @@
+fastapi
+pydantic
+uvicorn
+langserve
+langchain-core
+langgraph
+langchain_community
+langchain_milvus
