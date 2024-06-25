@@ -1,4 +1,4 @@
-from typing import Any, List, Dict
+from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -20,15 +20,27 @@ from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.embeddings import Embeddings
 
-def load_and_split_documents(urls: List[str]) -> List[Document]:
+
+def load_and_split_documents(urls: list[str]) -> list[Document]:
     docs = [WebBaseLoader(url).load() for url in urls]
     docs_list = [item for sublist in docs for item in sublist]
-    text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(chunk_size=250, chunk_overlap=0)
+    text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=250, chunk_overlap=0
+    )
     return text_splitter.split_documents(docs_list)
 
-def add_documents_to_milvus(doc_splits: List[Document], embedding_model: Embeddings, connection_args: Any):
-    vectorstore = Milvus.from_documents(documents=doc_splits, collection_name="rag_milvus", embedding=embedding_model, connection_args=connection_args)
+
+def add_documents_to_milvus(
+    doc_splits: list[Document], embedding_model: Embeddings, connection_args: Any
+):
+    vectorstore = Milvus.from_documents(
+        documents=doc_splits,
+        collection_name="rag_milvus",
+        embedding=embedding_model,
+        connection_args=connection_args,
+    )
     return vectorstore.as_retriever()
+
 
 # Initialize the components
 urls = [
@@ -86,7 +98,7 @@ question_router_prompt = PromptTemplate(
     input_variables=["question"],
 )
 
-local_llm = 'llama3'
+local_llm = "llama3"
 llm_json = ChatOllama(model=local_llm, format="json", temperature=0)
 llm_str = ChatOllama(model=local_llm, temperature=0)
 
@@ -94,10 +106,13 @@ retrieval_grader = retrieval_grader_prompt | llm_json | JsonOutputParser()
 hallucination_grader = hallucination_grader_prompt | llm_json | JsonOutputParser()
 question_router = question_router_prompt | llm_json | JsonOutputParser()
 
+
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
+
 rag_chain = answer_prompt | llm_str | StrOutputParser()
+
 
 def retrieve(state: Dict[str, Any]) -> Dict[str, Any]:
     print("---RETRIEVE---")
@@ -105,12 +120,16 @@ def retrieve(state: Dict[str, Any]) -> Dict[str, Any]:
     documents = retriever.invoke(question)
     return {"documents": [doc.page_content for doc in documents], "question": question}
 
+
 def generate(state: Dict[str, Any]) -> Dict[str, Any]:
     print("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
-    generation = rag_chain.invoke({"context": "\n\n".join(documents), "question": question})
+    generation = rag_chain.invoke(
+        {"context": "\n\n".join(documents), "question": question}
+    )
     return {"documents": documents, "question": question, "generation": generation}
+
 
 def grade_documents(state: Dict[str, Any]) -> Dict[str, Any]:
     print("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
@@ -120,13 +139,14 @@ def grade_documents(state: Dict[str, Any]) -> Dict[str, Any]:
     web_search = "No"
     for doc in documents:
         score = retrieval_grader.invoke({"question": question, "document": doc})
-        if score['score'].lower() == "yes":
+        if score["score"].lower() == "yes":
             print("---GRADE: DOCUMENT RELEVANT---")
             filtered_docs.append(doc)
         else:
             print("---GRADE: DOCUMENT NOT RELEVANT---")
             web_search = "Yes"
     return {"documents": filtered_docs, "question": question, "web_search": web_search}
+
 
 def web_search(state: Dict[str, Any]) -> Dict[str, Any]:
     print("---WEB SEARCH---")
@@ -137,27 +157,35 @@ def web_search(state: Dict[str, Any]) -> Dict[str, Any]:
     documents.append(web_results)
     return {"documents": documents, "question": question}
 
+
 def route_question(state: Dict[str, Any]) -> str:
     print("---ROUTE QUESTION---")
     question = state["question"]
     source = question_router.invoke({"question": question})
-    return "websearch" if source['datasource'] == 'web_search' else "vectorstore"
+    return "websearch" if source["datasource"] == "web_search" else "vectorstore"
+
 
 def decide_to_generate(state: Dict[str, Any]) -> str:
     print("---ASSESS GRADED DOCUMENTS---")
     return "websearch" if state["web_search"] == "Yes" else "generate"
 
+
 def grade_generation_v_documents_and_question(state: Dict[str, Any]) -> str:
     print("---CHECK HALLUCINATIONS---")
-    score = hallucination_grader.invoke({"documents": state["documents"], "generation": state["generation"]})
-    return "useful" if score['score'] == "yes" else "not supported"
+    score = hallucination_grader.invoke(
+        {"documents": state["documents"], "generation": state["generation"]}
+    )
+    return "useful" if score["score"] == "yes" else "not supported"
+
 
 # Define Pydantic model for request body
 class QuestionRequest(BaseModel):
     question: str
 
+
 # Initialize FastAPI app
 fastapi_app = FastAPI()
+
 
 # Define LangServe route for text analysis
 @fastapi_app.post("/analyze")
@@ -167,14 +195,17 @@ async def analyze_text(request: QuestionRequest):
     processed_data = f"Processed entities: {entities}"
     return {"entities": entities, "processed_data": processed_data}
 
+
 # Add LangServe routes to the app
 add_routes(fastapi_app, RunnableLambda(analyze_text))
+
 
 class GraphState(TypedDict):
     question: str
     generation: str
     web_search: str
-    documents: List[str]
+    documents: list[str]
+
 
 # Define the LangGraph workflow
 workflow = StateGraph(GraphState)
@@ -214,10 +245,16 @@ workflow.add_conditional_edges(
 # Compile the workflow
 compiled_workflow = workflow.compile()
 
+
 # Add a route to test the generate node directly
 @fastapi_app.post("/generate")
 async def generate_route(request: QuestionRequest):
-    state = {"question": request.question, "documents": [], "generation": "", "web_search": ""}
+    state = {
+        "question": request.question,
+        "documents": [],
+        "generation": "",
+        "web_search": "",
+    }
     try:
         outputs = []
         for output in compiled_workflow.stream(state):
@@ -227,6 +264,8 @@ async def generate_route(request: QuestionRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(fastapi_app, host="0.0.0.0", port=5001)
