@@ -1,0 +1,16 @@
+fastapi
+pydantic
+uvicorn
+langserve
+langchain-core
+langgraph
+langchain_community
+langchain_milvus
+beautifulsoup4
+tiktoken
+langchainhub
+pymilvus 
+langchain
+tavily-python
+sentence-transformers 
+langchain-huggingface
