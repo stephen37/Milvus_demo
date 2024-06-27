@@ -20,14 +20,14 @@ Before you start, ensure you have the following installed:
 ## Installation
 * Clone the repository:
 ```shell
-git clone https://github.com/your-username/langserve-langgraph-milvus.git
+git clone https://github.com/stephen37/langserve-langgraph-milvus.git
 cd langserve-langgraph-milvus
 ```
 
 * Create and activate a virtual environment:
 ```shell
 python -m venv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
+source env/bin/activate 
 ```
 
 * Install the required dependencies:
