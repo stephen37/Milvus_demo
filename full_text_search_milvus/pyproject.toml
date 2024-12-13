@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "full-text-search-milvus"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pymilvus = "^2.5.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.3"
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
