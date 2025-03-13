@@ -56,19 +56,18 @@ def setup_milvus_collection():
         collection_name=COLLECTION_NAME,
         schema=schema,
     )
-    
+
     index_params = milvus_client.prepare_index_params()
 
     index_params.add_index(
         field_name="embedding",
         index_type="IVF_FLAT",
         metric_type="COSINE",
-        params={"nlist": 128}
+        params={"nlist": 128},
     )
-    
+
     milvus_client.create_index(
-        collection_name=COLLECTION_NAME,
-        index_params=index_params
+        collection_name=COLLECTION_NAME, index_params=index_params
     )
 
     print(f"Collection '{COLLECTION_NAME}' created successfully with index.")
@@ -77,10 +76,7 @@ def setup_milvus_collection():
 # Generate embeddings using Mistral
 def generate_embedding(text):
     """Generate embedding for text using Mistral embedding model."""
-    response = client.embeddings.create(
-        model=embedding_model,
-        inputs=[text]
-    )
+    response = client.embeddings.create(model=embedding_model, inputs=[text])
     return response.data[0].embedding
 
 
@@ -213,18 +209,15 @@ def search_milvus(query, limit=5):
     # Check if collection exists
     if not milvus_client.has_collection(COLLECTION_NAME):
         return "No documents have been processed yet."
-    
+
     # Load collection if not already loaded
     if milvus_client.get_load_state(COLLECTION_NAME) != LoadState.Loaded:
         milvus_client.load_collection(COLLECTION_NAME)
-    
+
     print(f"Searching Milvus for query: {query}")
     query_embedding = generate_embedding(query)
 
-    search_params = {
-        "metric_type": "COSINE",
-        "params": {"nprobe": 10}
-    }
+    search_params = {"metric_type": "COSINE", "params": {"nprobe": 10}}
 
     search_results = milvus_client.search(
         collection_name=COLLECTION_NAME,
@@ -245,10 +238,10 @@ def search_milvus(query, limit=5):
         print(f"Hit keys: {hit.keys()}, type: {type(hit.keys())}")
         print(f"Hit entity: {hit['entity']}, type: {type(hit['entity'])}")
 
-        url = hit['entity']['url']
-        page_num = hit['entity']['page_num']
-        content = hit['entity']['content']
-        score = hit['distance']
+        url = hit["entity"]["url"]
+        page_num = hit["entity"]["page_num"]
+        content = hit["entity"]["content"]
+        score = hit["distance"]
 
         formatted_results += f"## Result {i + 1} (Score: {score:.2f})\n"
         formatted_results += f"**Source:** {url} (Page {page_num})\n\n"
